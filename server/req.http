@@ -1,0 +1,3 @@
+###To fetch the data
+get http://localhost:5000/weather?city=London
+Content-Type: application/json

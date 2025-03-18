@@ -1,0 +1,159 @@
+/* App.css */
+.app-wrapper {
+  min-height: 100vh;
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  transition: background-image 0.5s ease-in-out;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Background classes */
+.default-bg {
+  background: linear-gradient(135deg, #72b1d4, #4b86b4);
+}
+
+.sunny-bg {
+  background: linear-gradient(135deg, #f6d365, #fda085);
+}
+
+.snow-bg {
+  background: linear-gradient(135deg, #e6e9f0, #a8b5cc);
+}
+
+.rain-bg {
+  background: linear-gradient(135deg, #576f8f, #304352);
+}
+
+.cloudy-bg {
+  background: linear-gradient(135deg, #bdc3c7, #8e9eab);
+}
+
+.fog-bg {
+  background: linear-gradient(135deg, #d3cce3, #8ca6db);
+}
+
+.smog-bg {
+  background: linear-gradient(135deg, #757f9a, #d7dde8);
+}
+
+/* Main content area */
+.py-4 {
+  flex: 1;
+}
+
+/* Card styling */
+.weather-card {
+  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.detail-card {
+  background-color: rgba(248, 249, 250, 0.8);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Weather icon styling */
+.weather-icon {
+  font-size: 8rem;
+}
+
+.weather-icon-container {
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.welcome-icon {
+  font-size: 5rem;
+  color: #4285f4;
+  margin-bottom: 15px;
+}
+
+/* Weather details styling */
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.detail-icon {
+  font-size: 2rem;
+}
+
+.detail-label {
+  margin-bottom: 0;
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.detail-value {
+  margin-bottom: 0;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.detail-heading {
+  color: #495057;
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+/* City and temperature styling */
+.city-name {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 0;
+}
+
+.country-name {
+  margin-bottom: 15px;
+}
+
+.temperature {
+  font-weight: 700;
+  margin: 15px 0;
+}
+
+.weather-description {
+  text-transform: capitalize;
+}
+
+/* Welcome message styling */
+.welcome-message {
+  padding: 40px 20px;
+}
+
+/* Make responsive on small screens */
+@media (max-width: 767px) {
+  .weather-icon {
+    font-size: 6rem;
+  }
+  
+  .weather-icon-container {
+    height: 120px;
+  }
+  
+  .detail-icon {
+    font-size: 1.5rem;
+  }
+  
+  .city-name {
+    font-size: 1.7rem;
+  }
+  
+  .temperature {
+    font-size: 2.5rem !important;
+  }
+  
+  .welcome-icon {
+    font-size: 4rem;
+  }
+}
