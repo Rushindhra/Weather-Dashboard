@@ -34,7 +34,7 @@ function App() {
       setWeather(response.data);
     } catch (error) {
       console.error("API Error:", error.response?.data || error.message);
-      alert("City not found or API error!");
+      alert("City not found");
     }
     setLoading(false);
     setCity("");
