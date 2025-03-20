@@ -30,7 +30,7 @@ function App() {
 
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5000/weather?city=${city}`);
+      const response = await axios.get(`https://weather-dashboard-mk2a.onrender.com/weather?city=${city}`);
       setWeather(response.data);
     } catch (error) {
       console.error("API Error:", error.response?.data || error.message);
