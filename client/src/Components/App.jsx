@@ -12,7 +12,9 @@ import {
   FaCloudRain,
   FaCloudSun
 } from "react-icons/fa";
+import { IoIosThunderstorm } from "react-icons/io";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { City } from "country-state-city";
 import './App.css'
 import Header from "./Header";
 import Footer from "./Footer";
@@ -20,7 +22,40 @@ function App() {
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const inputRef = useRef(null);
+  
+   const fetchCities = (query) => {
+    if (!query.trim()) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
 
+      // Get all cities matching the query
+    const matchingCities = City.getAllCities()
+      .filter(c => c.name.toLowerCase().includes(query.toLowerCase()));
+    
+    // Create a Set to store unique city names
+    const uniqueCityNames = new Set();
+    const uniqueCities = [];
+    
+    // Filter out duplicate city names
+    matchingCities.forEach(city => {
+      if (!uniqueCityNames.has(city.name)) {
+        uniqueCityNames.add(city.name);
+        uniqueCities.push(city.name);
+      }
+    });
+    
+    // Set the suggestions (limited to 10)
+    setSuggestions(uniqueCities.slice(0, 10));
+    setShowSuggestions(uniqueCities.length > 0);
+    setSelectedIndex(-1); // Reset selected index when suggestions change
+  };
+  
   const fetchWeather = async (e) => {
     e.preventDefault();
     if (!city.trim()) {
@@ -40,6 +75,50 @@ function App() {
     setCity("");
   };
 
+   // Handle keyboard navigation
+  const handleKeyDown = (e) => {
+    if (!showSuggestions) return;
+    
+    // Arrow Down
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSelectedIndex(prevIndex => 
+        prevIndex < suggestions.length - 1 ? prevIndex + 1 : 0
+      );
+    }
+    
+    // Arrow Up
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSelectedIndex(prevIndex => 
+        prevIndex > 0 ? prevIndex - 1 : suggestions.length - 1
+      );
+    }
+    
+    // Enter key
+    if (e.key === "Enter" && selectedIndex >= 0) {
+      e.preventDefault();
+      setCity(suggestions[selectedIndex]);
+      setShowSuggestions(false);
+      setSelectedIndex(-1);
+      
+    }
+    
+    // Escape key
+    if (e.key === "Escape") {
+      setShowSuggestions(false);
+      setSelectedIndex(-1);
+    }
+  };
+
+  // Effect to update city input when using keyboard navigation
+  useEffect(() => {
+    if (selectedIndex >= 0 && selectedIndex < suggestions.length) {
+      // Don't update the input text while navigating
+      // This allows for preview without changing the input until Enter is pressed
+    }
+  }, [selectedIndex, suggestions]);
+  
   // Get weather icon based on description and temperature
   const getWeatherIcon = () => {
     if (!weather) return <FaCloudSun className="weather-icon text-warning" />;
@@ -58,7 +137,7 @@ function App() {
     if (desc.includes("fog") || desc.includes("mist") || desc.includes("haze"))
       return <FaSmog className="weather-icon text-secondary" />;
     
-    return <FaCloudSun className="weather-icon text-warning" />;
+    return <IoIosThunderstorm  className="weather-icon text-warning" />;
   };
 
   // Background class based on weather
@@ -115,7 +194,27 @@ function App() {
                         onChange={(e) => setCity(e.target.value)}
                         required
                         className="form-control-lg"
+                        autoComplete="off"
                       />
+                      {showSuggestions && (
+                        <ListGroup className="suggestion-list position-absolute w-100 mt-1 shadow-sm">
+                          {suggestions.map((suggestion, index) => (
+                            <ListGroup.Item
+                              key={index}
+                              action
+                              onClick={() => {
+                                setCity(suggestion);
+                                setShowSuggestions(false);
+                                setSelectedIndex(-1);
+                                inputRef.current.focus();
+                              }}
+                              className={`py-2 suggestion-item ${index === selectedIndex ? 'selected-suggestion' : ''}`}
+                            >
+                              {suggestion}
+                            </ListGroup.Item>
+                          ))}
+                        </ListGroup>
+                      )}
                     </Col>
                     <Col xs={12} md={4}>
                       <Button 
