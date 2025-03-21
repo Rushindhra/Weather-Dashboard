@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { Container, Row, Col, Form, Button, Card, Spinner } from "react-bootstrap";
-import { 
-  FaSearch, 
-  FaTemperatureHigh, 
-  FaWater, 
-  FaCloud, 
+import { Container, Row, Col, Form, Button, Card, Spinner, ListGroup } from "react-bootstrap";
+import {
+  FaSearch,
+  FaTemperatureHigh,
+  FaWater,
+  FaCloud,
   FaSun,
   FaSnowflake,
   FaSmog,
@@ -15,9 +15,10 @@ import {
 import { IoIosThunderstorm } from "react-icons/io";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { City } from "country-state-city";
-import './App.css'
+import './App.css';
 import Header from "./Header";
 import Footer from "./Footer";
+
 function App() {
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState(null);
@@ -26,15 +27,15 @@ function App() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const inputRef = useRef(null);
-  
-   const fetchCities = (query) => {
+
+  const fetchCities = (query) => {
     if (!query.trim()) {
       setSuggestions([]);
       setShowSuggestions(false);
       return;
     }
-
-      // Get all cities matching the query
+    
+    // Get all cities matching the query
     const matchingCities = City.getAllCities()
       .filter(c => c.name.toLowerCase().includes(query.toLowerCase()));
     
@@ -55,7 +56,7 @@ function App() {
     setShowSuggestions(uniqueCities.length > 0);
     setSelectedIndex(-1); // Reset selected index when suggestions change
   };
-  
+
   const fetchWeather = async (e) => {
     e.preventDefault();
     if (!city.trim()) {
@@ -65,17 +66,18 @@ function App() {
 
     setLoading(true);
     try {
-      const response = await axios.get(`https://weather-dashboard-mk2a.onrender.com/weather?city=${city}`);
+      const response = await axios.get(`http://localhost:5000/weather?city=${city}`);
       setWeather(response.data);
     } catch (error) {
       console.error("API Error:", error.response?.data || error.message);
-      alert("City not found.");
+      alert("City not found or API error!");
     }
     setLoading(false);
+    setShowSuggestions(false);
     setCity("");
   };
 
-   // Handle keyboard navigation
+  // Handle keyboard navigation
   const handleKeyDown = (e) => {
     if (!showSuggestions) return;
     
@@ -118,7 +120,7 @@ function App() {
       // This allows for preview without changing the input until Enter is pressed
     }
   }, [selectedIndex, suggestions]);
-  
+
   // Get weather icon based on description and temperature
   const getWeatherIcon = () => {
     if (!weather) return <FaCloudSun className="weather-icon text-warning" />;
@@ -137,7 +139,7 @@ function App() {
     if (desc.includes("fog") || desc.includes("mist") || desc.includes("haze"))
       return <FaSmog className="weather-icon text-secondary" />;
     
-    return <IoIosThunderstorm  className="weather-icon text-warning" />;
+    return <IoIosThunderstorm className="weather-icon text-warning" />;
   };
 
   // Background class based on weather
@@ -186,12 +188,17 @@ function App() {
               <Card.Body>
                 <Form onSubmit={fetchWeather} className="mb-4">
                   <Row className="align-items-center">
-                    <Col xs={12} md={8} className="mb-2 mb-md-0">
+                    <Col xs={12} md={8} className="mb-2 mb-md-0 position-relative">
                       <Form.Control
+                        ref={inputRef}
                         type="text"
                         placeholder="Enter city name"
                         value={city}
-                        onChange={(e) => setCity(e.target.value)}
+                        onChange={(e) => {
+                          setCity(e.target.value);
+                          fetchCities(e.target.value);
+                        }}
+                        onKeyDown={handleKeyDown}
                         required
                         className="form-control-lg"
                         autoComplete="off"
@@ -217,10 +224,10 @@ function App() {
                       )}
                     </Col>
                     <Col xs={12} md={4}>
-                      <Button 
-                        type="submit" 
-                        variant="primary" 
-                        className="w-100 btn-lg" 
+                      <Button
+                        type="submit"
+                        variant="primary"
+                        className="w-100 btn-lg"
                         disabled={loading}
                       >
                         {loading ? (
